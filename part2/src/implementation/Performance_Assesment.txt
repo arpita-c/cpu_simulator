@@ -1,0 +1,27 @@
+Performance Assesment
+---------------------
+
+The program,seive of Eratosthenes takes 7096 cycles to run when forwading is not implemented.The number of cycles are reduced to 3480 with forwarding.
+
+Reason is::
+-----------
+  The source registers of the instruction  which have dependency on the destination registers of the previous instruction,will take the computed values after execute /memory stage of the previous instruction resulting into reducing the number of stall. It ensures that the later instructions dont have to wait till the dependency got resolved by the previous instructions being passed through all 5 stages   
+
+How/Why/Where forwarding resulted into performance::
+--------------------------------------------
+The instruction which has dependency to its previous instruction does not wait until writeback stage gets finished. Instead the values are fetched soon after it is computed reducing the number of stalls.
+
+Instead of waiting for the instruction to complete writeback, values can be fetched at intermediate pipeline registers after a valid value is generated.
+
+The Decode stage iterates through all the pipeline registers from DecodeToExecute to MemoryToWriteback in order to pick the valid value. The valid value is usually present in either ExecuteToMemory - for all writeback instructions - or MemoryToWriteback in case
+of LOAD. 
+
+
+Example
+-------
+
+01: store r1, r1
+02: add r1, r1, 1
+03: cmp r2, r1, r10
+
+Instruction 02 has to wait till instruction 01 completes writeback (2 cycles stall) in the traditional sequencial pipeline. With forwarding, no stall is needed as it can get the value in the next cycle from the ExecuteToMemory pipeline register.
